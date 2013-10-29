@@ -3,8 +3,6 @@ sys.path.append('utils')
 import imageIO as io
 import numpy as np
 import a5
-import multiprocessing as multi
-
 
 
 def test_computeWeight():
@@ -24,31 +22,31 @@ def test_computeFactor():
   
 def test_makeHDR():
   import glob, time
-##  p=multi.Pool(processes=8)
-##  im_list=p.map(io.imread,inputs)
-  inputs=glob.glob('data/ante3-*.png')
+  inputs=glob.glob('data/sea-*.png')
   im_list = []
   for inp in inputs:
     im_list.append(io.imread(inp))
-
 
   hdr=a5.makeHDR(im_list)
   np.save('hdr', hdr)
 
   hdr_scale=hdr/max(hdr.flatten())
   io.imwrite(hdr_scale, 'hdr_linear_scale.png')
-  
+
 
 def test_toneMap():
   hdr=np.load('hdr.npy')
-  out=a5.toneMap(hdr, useBila=True)
-  io.imwrite(out, 'tone_map.png')
+  out=a5.toneMap(hdr, 100, 1.0, useBila=False)
+  io.imwrite(out, 'tone_map_gauss.png')
+
+  out=a5.toneMap(hdr, 100, 2.0, useBila=True)
+  io.imwrite(out, 'tone_map_bila.png')
 
 
 # Uncomment the below to test your code
 
 ##test_computeWeight()
 ##test_computeFactor()
-##test_makeHDR()
+test_makeHDR()
 test_toneMap()
 
